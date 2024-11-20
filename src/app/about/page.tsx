@@ -150,7 +150,6 @@ export default function Auth({ children }) {
 </code>
 </pre>
 
-
     <p className="vertical-inline-flex heading"> Confirmation Component </p>
     <p> After payment, show a confirmation message or failure message. Display a message about the payment outcome e.g., “Payment Successful” or “Payment Failed”. Provide options like “Return to Home” or “View Receipt.” It can also redirect the user to a success page or log the payment in their account. </p>
 
