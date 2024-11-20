@@ -1,0 +1,71 @@
+.stepIndicator {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  margin: 50px 0;
+  width: 100%;
+}
+
+.stepCircle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 1px solid rgb(202, 202, 202);
+  background-color: #003049;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(202, 202, 202);
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.stepCircle.completed {
+  background-color: rgb(0, 173, 0);
+  border: 1px solid rgb(0, 173, 0);
+  color: #ffffff;
+}
+
+.status-message {
+  font-size: 16px;
+  margin-top: 10px;
+  color: #333;
+}
+
+.paymentForm {
+  width: 100%;
+}
+
+.formGroup {
+  margin-bottom: 15px;
+}
+
+.formGroup label {
+  display: block;
+  font-size: 15px;
+  margin-bottom: 5px;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ffffff;
+  background-color: #003049;
+  border-radius: 4px;
+  color: #ffffff;
+}
+
+.formGroup button {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  background-color: #4caf50;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.formGroup button:disabled {
+  background-color: #ccc;
+}
