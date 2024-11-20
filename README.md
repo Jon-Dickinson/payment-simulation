@@ -1,6 +1,7 @@
+
+Theoretical exercise to better understand the types of components involved for an online payment process. 
+
 ![screenshot](./public/screen-success.png)
-
-
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
