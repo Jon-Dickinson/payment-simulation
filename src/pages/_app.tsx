@@ -1,5 +1,5 @@
 import { createContext, useState } from 'react';
-import '../styles/globals.css';
+import '../app/globals.css';
 import { AppProps } from 'next/app';
 
 interface AuthContextType {

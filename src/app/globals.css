@@ -232,3 +232,15 @@ p {
   color: #333;
   font-size: 16px;
 }
+
+.heading {
+  font-size: 22px;
+  font-weight: 600;
+  margin-top: 70px;
+  margin-bottom: 10px;
+}
+
+.code-block {
+  font-size: 15px;
+  margin-top: 20px;
+}
