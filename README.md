@@ -1,7 +1,7 @@
 
-Theoretical exercise to better understand the types of components involved for an online payment process. 
+Theoretical exercise to better understand the types of components involved in an online payment process. 
 
-![screenshot](./public/screen-success.png)
+![screenshot](./public/github-diagram.png)
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
