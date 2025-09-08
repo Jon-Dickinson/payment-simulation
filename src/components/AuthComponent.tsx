@@ -7,28 +7,34 @@ interface AuthProps {
 const AuthComponent: React.FC<AuthProps> = ({ onAuthSuccess }) => {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [token, setToken] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null); // 👈 add this
 
   const handleLogin = async () => {
     setIsAuthenticating(true);
+    setError(null);
 
-    setTimeout(() => {
+    try {
+      const response = await fetch("/api/auth", { method: "POST" });
+      const data = await response.json();
+
+      if (data.success) {
+        setToken(data.token);
+        onAuthSuccess(data.token);
+      } else {
+        setError(data.message || "Authentication failed");
+      }
+    } catch (err) {
+      console.error("Auth error:", err);
+      setError("Network error");
+    } finally {
       setIsAuthenticating(false);
-
-      const randomToken = `auth-token-${Math.random().toString(36).substr(2, 9)}-${Date.now()}`;
-      
-      setToken(randomToken);
-      onAuthSuccess(randomToken);
-      console.log(randomToken);
-    }, 2000);
+    }
   };
 
   return (
     <div className="if-base-wrapper">
-      {token && (
-        <span className="token-display">
-          Token: {token}
-        </span>
-      )}
+      {token && <span className="token-display">Token: {token}</span>}
+      {error && <p className="error-message">{error}</p>}
       <button
         className="auth-button"
         onClick={handleLogin}

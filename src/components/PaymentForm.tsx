@@ -4,16 +4,15 @@ import React, { useState } from "react";
 import styles from "./PaymentForm.module.css";
 import FormValidation from "../utils/formValidation";
 
-interface PaymentFormProps {
-  setPaymentStatus: React.Dispatch<React.SetStateAction<string>>;
-}
-
 interface ApiResponse {
   success: boolean;
   message: string;
+  transactionId?: string;
+  amount?: number;
+  currency?: string;
 }
 
-const PaymentForm: React.FC<PaymentFormProps> = () => {
+const PaymentForm: React.FC = () => {
   const [formData, setFormData] = useState({
     cardHolderName: "",
     cardNumber: "",
@@ -26,24 +25,20 @@ const PaymentForm: React.FC<PaymentFormProps> = () => {
   const [progress, setProgress] = useState([false, false, false]);
   const [expiryDateValid, setExpiryDateValid] = useState(true);
 
-  // TODO: use step 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [step, setStep] = useState(0);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
 
-    // MM/YY format
     if (name === "expiryDate") {
-      const expiryRegex = /^(0[1-9]|1[0-2])\/[0-9]{2}$/; 
+      const expiryRegex = /^(0[1-9]|1[0-2])\/[0-9]{2}$/;
       setExpiryDateValid(expiryRegex.test(value));
     }
   };
 
   const simulateStep = (
     nextStatus: string,
-    message: string,
     delay: number,
     stepIndex: number
   ): Promise<void> => {
@@ -61,72 +56,67 @@ const PaymentForm: React.FC<PaymentFormProps> = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-  
+
     const { cardNumber, expiryDate, cvv } = formData;
-  
+
     const expiryRegex = /^(0[1-9]|1[0-2])\/[0-9]{2}$/;
     if (!expiryRegex.test(expiryDate)) {
       setExpiryDateValid(false);
       setPaymentStatus("Invalid expiry date. Please check your input.");
       return;
     }
-  
+
     if (!FormValidation({ cardNumber, expiryDate, cvv })) {
       setPaymentStatus("Invalid payment details. Please check your inputs.");
       return;
     }
-  
+
     setIsProcessing(true);
     setPaymentStatus("Processing...");
-  
+
     try {
-      // Simulate form data submission
-      await simulateStep("Submitting form data...", "Authenticating...", 2000, 0);
-  
-      // Simulate authentication
-      await simulateStep("Authenticating...", "Processing payment...", 2000, 1);
-  
-      // Simulate payment processing
-      await simulateStep("Payment successful!", "Payment successful!", 2000, 2);
-  
-      // Mock API call
-      const mockApiResponse = await new Promise<ApiResponse>((resolve) => {
-        setTimeout(() => {
- 
-          resolve({ success: true, message: "Payment processed successfully!" });
-        }, 3000);
+      await simulateStep("Submitting form data...", 1000, 0);
+      await simulateStep("Authenticating...", 1000, 1);
+      await simulateStep("Processing payment...", 2000, 2);
+
+      const response = await fetch("/api/payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: 100, currency: "USD" }),
       });
-  
-      if (mockApiResponse.success) {
-        setPaymentStatus(mockApiResponse.message);
-        
+
+      const result: ApiResponse = await response.json();
+
+      if (result.success) {
+        setPaymentStatus(
+          `Payment successful! Transaction ID: ${result.transactionId}, Amount: ${result.amount} ${result.currency}`
+        );
         setTimeout(() => {
           resetForm();
           resetStepIndicators();
         }, 2000);
-        
       } else {
-        setPaymentStatus("Payment failed. Please try again.");
+        setPaymentStatus(`Payment failed: ${result.message}`);
       }
     } catch (error) {
-      setPaymentStatus("An error occurred.");
+      setPaymentStatus("An error occurred while processing payment.");
       console.error("Payment failed:", error);
     } finally {
       setIsProcessing(false);
     }
   };
-  
+
   const resetForm = () => {
     setFormData({
-      cardHolderName: '',
-      cardNumber: '',
-      expiryDate: '',
-      cvv: '',
+      cardHolderName: "",
+      cardNumber: "",
+      expiryDate: "",
+      cvv: "",
     });
     setExpiryDateValid(true);
-    setPaymentStatus('');
+    setPaymentStatus("");
   };
-  
+
   const resetStepIndicators = () => {
     setStep(0);
     setProgress([false, false, false]);
@@ -136,9 +126,7 @@ const PaymentForm: React.FC<PaymentFormProps> = () => {
     <div className="payment-container">
       <div className="vertical-inline-flex">
         <div className="vertical-inline-flex min-h-50 margin-t-40">
-          <p className="t-align--c">
-            {paymentStatus}
-          </p>
+          <p className="t-align--c">{paymentStatus}</p>
         </div>
         <div className="horizontal-inline-flex">
           <div className={styles.stepIndicator}>
@@ -160,9 +148,7 @@ const PaymentForm: React.FC<PaymentFormProps> = () => {
           </div>
         </div>
         <div className="horizontal-inline-flex">
-          <div
-            className={`bar ${progress[2] ? styles.completed : ""}`}
-          ></div>
+          <div className={`bar ${progress[2] ? styles.completed : ""}`}></div>
         </div>
       </div>
 
@@ -178,8 +164,10 @@ const PaymentForm: React.FC<PaymentFormProps> = () => {
             required
             disabled={isProcessing}
             className="border-2-d2d2d2"
+            autoComplete="cc-name"
           />
         </div>
+
         <div className={styles.formGroup}>
           <label htmlFor="cardNumber">Card Number</label>
           <input
@@ -192,6 +180,8 @@ const PaymentForm: React.FC<PaymentFormProps> = () => {
             disabled={isProcessing}
             className="border-2-d2d2d2"
             maxLength={16}
+            autoComplete="cc-number"
+            inputMode="numeric"
           />
         </div>
 
@@ -208,6 +198,8 @@ const PaymentForm: React.FC<PaymentFormProps> = () => {
                 required
                 disabled={isProcessing}
                 className={`border-2-d2d2d2 ${expiryDateValid ? "" : "border-2-red"}`}
+                autoComplete="cc-exp"
+                placeholder="MM/YY"
               />
             </div>
           </div>
@@ -224,6 +216,7 @@ const PaymentForm: React.FC<PaymentFormProps> = () => {
                 disabled={isProcessing}
                 className="border-2-d2d2d2"
                 maxLength={3}
+                autoComplete="cc-csc"
               />
             </div>
           </div>

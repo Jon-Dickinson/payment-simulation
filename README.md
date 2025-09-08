@@ -11,12 +11,10 @@ First, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+Windows 10
+Replace Name with Username
+npx local-ssl-proxy --source 3443 --target 3000 --cert C:\Users\ Name \localhost.pem --key C:\Users\ Name \localhost-key.pem
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
